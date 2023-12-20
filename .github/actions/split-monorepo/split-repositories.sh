@@ -6,7 +6,7 @@ GH_TOKEN=$1
 PACKAGE=$2
 ORGANIZATION=$3
 BRANCH=$4
-ONLY_DRY=$5
+
 TMP="tmp_split/${RANDOM}"
 URL="https://${GH_TOKEN}@github.com/${ORGANIZATION}/${PACKAGE}"
 
@@ -31,8 +31,7 @@ git filter-repo --subdirectory-filter packages/${PACKAGE} --force
 
 echo "dry-run"
 git push "${URL}.git" ${BRANCH} --dry-run --verbose
-git push "${URL}.git" ${BRANCH} --tags --dry-run --verbose
 
-#echo "git push"
-#git push "${URL}.git" ${BRANCH} --verbose
-#git push "${URL}.git" ${BRANCH} --tags --verbose
+echo "git push"
+git push "${URL}.git" ${BRANCH} --verbose
+git push "${URL}.git" ${BRANCH} --tags --verbose
