@@ -8,7 +8,9 @@ inputs:
   package:
     description: 'Package'
     required: true
-
+  gh-token:
+    required: true
+    description: "token"
 runs:
   using: "composite"
   steps:
@@ -22,4 +24,4 @@ runs:
       shell: "bash"
       run: |
         git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
-        bash ${{github.action_path}}/split-repositories.sh "${{ inputs.package }}" ${{ inputs.organization }} "${{ github.ref_name }}"
+        bash ${{github.action_path}}/split-repositories.sh "${{ inputs.gh-token }}" "${{ inputs.package }}" ${{ inputs.organization }} "${{ github.ref_name }}"

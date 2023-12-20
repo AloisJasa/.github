@@ -40,3 +40,4 @@ jobs:
         with:
           organization: "${{ inputs.organization }}"
           package: "${{ inputs.package }}"
+          gh-token: "${{ secrets.gh-token }}"

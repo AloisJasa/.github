@@ -2,15 +2,13 @@
 
 set -eo pipefail
 
-PACKAGE=$1
-ORGANIZATION=$2
-BRANCH=$3
-ONLY_DRY=$4
+GH_TOKEN=$1
+PACKAGE=$2
+ORGANIZATION=$3
+BRANCH=$4
+ONLY_DRY=$5
 TMP="tmp_split/${RANDOM}"
-
-ALIAS_ORIGIN="origin-${PACKAGE}"
-
-SSH="git@github.com:${ORGANIZATION}/${PACKAGE}.git"
+URL="https://${GH_TOKEN}@github.com/${ORGANIZATION}/${PACKAGE}"
 
 set -u
 
@@ -31,12 +29,10 @@ cd ${DIR_PWD}/${TMP}/${PACKAGE}
 
 git filter-repo --subdirectory-filter packages/${PACKAGE} --force
 
-git remote add ${ALIAS_ORIGIN} ${SSH}
-
 echo "dry-run"
-git push ${ALIAS_ORIGIN} ${BRANCH} --dry-run --verbose
-git push ${ALIAS_ORIGIN} ${BRANCH} --tags --dry-run --verbose
+git push "${URL}.git" ${BRANCH} --dry-run --verbose
+git push "${URL}.git" ${BRANCH} --tags --dry-run --verbose
 
 #echo "git push"
-#git push ${ALIAS_ORIGIN} ${BRANCH} --verbose
-#git push ${ALIAS_ORIGIN} ${BRANCH} --tags --verbose
+#git push "${URL}.git" ${BRANCH} --verbose
+#git push "${URL}.git" ${BRANCH} --tags --verbose
