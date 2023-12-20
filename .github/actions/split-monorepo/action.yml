@@ -1,0 +1,25 @@
+name: Monorepo split
+description: Split
+
+inputs:
+  organization:
+    description: 'Org'
+    required: true
+  package:
+    description: 'Package'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install git-filter-repo
+      shell: "bash"
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git-filter-repo
+
+    - name: Split
+      shell: "bash"
+      run: |
+        git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
+        bash split-repositories.sh "${{ inputs.package }}" ${{ inputs.organization }} "${{ github.ref_name }}"

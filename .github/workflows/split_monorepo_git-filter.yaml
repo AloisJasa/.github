@@ -32,12 +32,8 @@ jobs:
         run: |
           echo "$GITHUB_CONTEXT"
 
-      - name: Install git-filter-repo
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git-filter-repo
-
       - name: Split
-        run: |
-          git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
-          bash ${{ github.action_path }}/.github/scripts/split-repositories.sh "${{ inputs.package }}" ${{ inputs.organization }} "${{ github.ref_name }}"
+        uses: "AloisJasa/.github/.github/actions/split-monorepo@main"
+        with:
+          organization: "${{ inputs.organization }}"
+          package: "${{ inputs.package }}"
