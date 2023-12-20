@@ -26,6 +26,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.gh-token }}
 
+      - run: git config --global user.name "GitHub Action"
+      - run: git config --global user.email "action@github.com"
+
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
