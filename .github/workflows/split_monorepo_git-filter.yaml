@@ -38,6 +38,6 @@ jobs:
       - name: Split
         uses: "AloisJasa/.github/.github/actions/split-monorepo@main"
         with:
-          organization: "${{ inputs.organization }}"
-          package: "${{ inputs.package }}"
-          gh-token: "${{ secrets.gh-token }}"
+          organization: ${{ inputs.organization }}
+          package: ${{ inputs.package }}
+          gh-token: ${{ secrets.gh-token }}
