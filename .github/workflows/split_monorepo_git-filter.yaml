@@ -1,0 +1,72 @@
+name: Monorepo split
+
+on:
+  workflow_call:
+    inputs:
+      organization:
+        description: 'Organization'
+        required: true
+        type: string
+      package:
+        description: 'Package'
+        required: true
+        type: string
+      force:
+        description: 'force push'
+        required: false
+        type: boolean
+        default: false
+      push-tags:
+        description: 'push tags'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      gh-token:
+        required: true
+jobs:
+  split-branch:
+    name: Split branch
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Secrets and Inputs
+        id: inputs-check
+        shell: bash
+        run: |
+          if [ "${{ secrets.gh-token }}" == '' ]; then
+            echo "is-valid=false" >> $GITHUB_OUTPUT;
+            echo "msg=gh-token" >> $GITHUB_OUTPUT;
+          elif [ "${{ inputs.package }}" == '' ]; then
+            echo "is-valid=false" >> $GITHUB_OUTPUT;
+            echo "msg=repository" >> $GITHUB_OUTPUT;
+          elif [ "${{ inputs.organization }}" == '' ]; then
+            echo "is-valid=false" >> $GITHUB_OUTPUT;
+            echo "msg=organization" >> $GITHUB_OUTPUT;
+          else
+            echo "is-valid=true" >> $GITHUB_OUTPUT;
+            echo "msg=" >> $GITHUB_OUTPUT;
+          fi
+      - name: Result
+        if: ${{ steps.inputs-check.outputs.is-valid != 'true' }}
+        shell: bash
+        run: |
+          echo "::error Not valid input ${{ steps.inputs-check.outputs.msg}}"
+          exit 1
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.gh-token }}
+
+      - run: git config --global user.name "${{ github.actor }}"
+      - run: git config --global user.email "action@github.com"
+
+      - name: Split
+        uses: "AloisJasa/.github/.github/actions/split-monorepo@main"
+        with:
+          organization: ${{ inputs.organization }}
+          package: ${{ inputs.package }}
+          force: ${{ inputs.force }}
+          push-tags: ${{ inputs.push-tags }}
+          gh-token: ${{ secrets.gh-token }}
