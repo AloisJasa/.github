@@ -1,0 +1,71 @@
+name: Build Docker image template
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: TAG
+        required: true
+        type: string
+      latest:
+        description: Latest
+        required: false
+        type: boolean
+        default: false
+      publish:
+        description: Auto Publish
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      gh-token:
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Vytvoření nového releasu
+    timeout-minutes: 7
+    steps:
+      - name: Check for Secrets and Inputs
+        id: inputs-check
+        shell: bash
+        run: |
+          if [ "${{ inputs.tag }}" == '' ]; then
+            echo "is-valid=false" >> $GITHUB_OUTPUT;
+            echo "msg=tag" >> $GITHUB_OUTPUT;
+          else
+            echo "is-valid=true" >> $GITHUB_OUTPUT;
+            echo "msg=" >> $GITHUB_OUTPUT;
+          fi
+      - name: Check result
+        if: ${{ steps.inputs-check.outputs.is-valid != 'true' }}
+        shell: bash
+        run: |
+          echo "::error Not valid input ${{ steps.inputs-check.outputs.msg}}"
+          exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.gh-token }}
+
+      - name: Get the tag branch
+        id: check_branch
+        run: |
+          raw=$(git branch -r --contains ${{ inputs.tag }})
+          branch="$(echo ${raw//origin\//} | tr -d '\n')"
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+          echo "Branches where this tag exists : $branch"
+      - name: Draft release
+        uses: release-drafter/release-drafter@v5
+        id: draft_release
+        with:
+          config-name: release_drafter_p7.yml
+          tag: ${{ inputs.tag }}
+          version: v${{ inputs.tag }}
+          disable-autolabeler: true
+          latest: ${{ inputs.latest }}
+          publish: ${{ inputs.publish }}
+          commitish: ${{ steps.check_branch.outputs.branch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.gh-token }}
