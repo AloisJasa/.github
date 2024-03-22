@@ -13,6 +13,11 @@ on:
         default: ''
         required: false
         type: string
+      force_check:
+        description: 'Force run'
+        default: false
+        required: false
+        type: boolean
     secrets:
       gh-token:
         required: true
@@ -34,7 +39,7 @@ jobs:
             composer.lock
 
       - name: "Install PHP"
-        if: env.GIT_DIFF && env.MATCHED_FILES
+        if: ${{ inputs.php_version }} == 'true' || (env.GIT_DIFF && env.MATCHED_FILES)
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ inputs.php_version }}"
@@ -43,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.gh-token }}
 
       - name: Composer validate
-        if: env.GIT_DIFF && env.MATCHED_FILES
+        if: ${{ inputs.php_version }} == 'true' || (env.GIT_DIFF && env.MATCHED_FILES)
         run: |
 #          composer install --no-progress
           composer validate
