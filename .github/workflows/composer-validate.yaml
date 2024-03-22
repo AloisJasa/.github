@@ -41,7 +41,6 @@ jobs:
           extensions: "${{ inputs.extensions }}"
         env:
           GITHUB_TOKEN: ${{ secrets.gh-token }}
-
       - name: Composer validate
         if: env.GIT_DIFF && env.MATCHED_FILES
         run: |
