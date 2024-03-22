@@ -15,7 +15,7 @@ on:
         type: string
       force_check:
         description: 'Force run'
-        default: false
+        default: 'false'
         required: false
         type: boolean
     secrets:
@@ -48,6 +48,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.gh-token }}
 
       - name: Composer validate
-        if: ${{ inputs.force_check  == 'true'}} || (env.GIT_DIFF && env.MATCHED_FILES)
+        if: ${{ inputs.force_check  == 'true' }} || (env.GIT_DIFF && env.MATCHED_FILES)
         run: |
           composer validate
