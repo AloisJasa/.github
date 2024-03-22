@@ -50,5 +50,4 @@ jobs:
       - name: Composer validate
         if: ${{ inputs.force_check }} == 'true' || (env.GIT_DIFF && env.MATCHED_FILES)
         run: |
-#          composer install --no-progress
           composer validate
