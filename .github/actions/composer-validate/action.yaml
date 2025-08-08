@@ -43,11 +43,12 @@ runs:
 
     - name: Monorepo-builder validate
       shell: bash
-      if: ${{ env.GIT_DIFF && env.MATCHED_FILES && inputs.monorepo-validate == 'true' }}
+      if: ${{ always() && env.GIT_DIFF && env.MATCHED_FILES && inputs.monorepo-validate == 'true' }}
       run: vendor/bin/monorepo-builder validate
 
     - name: Kontrola commit message
       shell: bash
+      if: always()
       env:
         PR_COMMITS: ${{ github.event.pull_request.commits }}
       run: |
