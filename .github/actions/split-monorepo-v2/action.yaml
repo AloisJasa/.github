@@ -1,0 +1,63 @@
+name: Monorepo split
+description: Split
+
+inputs:
+  organization:
+    description: 'Organization'
+    required: true
+  package:
+    description: 'Repository'
+    required: true
+  force:
+    description: 'Force push'
+    required: false
+    default: 'false'
+  push-tags:
+    description: 'Push tags'
+    required: false
+    default: 'false'
+  gh-token:
+    required: true
+    description: "GitHub token"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check Inputs
+      id: inputs-check
+      shell: bash
+      run: |
+        if [ "${{ inputs.gh-token }}" == '' ]; then
+          echo "::error ::Missing input: gh-token"
+          exit 1
+        elif [ "${{ inputs.package }}" == '' ]; then
+          echo "::error ::Missing input: package"
+          exit 1
+        elif [ "${{ inputs.organization }}" == '' ]; then
+          echo "::error ::Missing input: organization"
+          exit 1
+        fi
+
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+        fetch-depth: 0
+        token: ${{ inputs.gh-token }}
+
+    - name: Set author
+      shell: "bash"
+      run: |
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "action@github.com"
+
+    - name: Install git-filter-repo
+      shell: "bash"
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git-filter-repo
+
+    - name: Split
+      shell: "bash"
+      run: |
+        git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
+        bash ${{github.action_path}}/split-repositories.sh "${{ inputs.gh-token }}" "${{ inputs.package }}" ${{ inputs.organization }} "${{ github.ref_name }}" ${{ inputs.force == 'true' }} ${{ inputs.push-tags == 'true' }}
