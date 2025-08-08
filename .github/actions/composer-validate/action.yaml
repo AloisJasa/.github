@@ -25,9 +25,7 @@ runs:
       shell: bash
       run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-    - name: Technote-space
-      shell: bash
-      uses: technote-space/get-diff-action@v6
+    - uses: technote-space/get-diff-action@v6
       with:
         FILES: |
           composer.json
