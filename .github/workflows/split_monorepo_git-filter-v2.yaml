@@ -1,0 +1,40 @@
+name: Monorepo split
+
+on:
+  workflow_call:
+    inputs:
+      organization:
+        description: 'Organization'
+        required: true
+        type: string
+      package:
+        description: 'Package'
+        required: true
+        type: string
+      force:
+        description: 'force push'
+        required: false
+        type: boolean
+        default: false
+      push-tags:
+        description: 'push tags'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      gh-token:
+        required: true
+jobs:
+  split-branch:
+    name: Split branch
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Split
+        uses: "AloisJasa/.github/.github/actions/split-monorepo@main"
+        with:
+          organization: ${{ inputs.organization }}
+          package: ${{ inputs.package }}
+          force: ${{ inputs.force }}
+          push-tags: ${{ inputs.push-tags }}
+          gh-token: ${{ secrets.gh-token }}

@@ -28,13 +28,13 @@ runs:
       shell: bash
       run: |
         if [ "${{ inputs.gh-token }}" == '' ]; then
-          echo "::error ::Missing input: gh-token"
+          echo "::error::Missing input: gh-token"
           exit 1
         elif [ "${{ inputs.package }}" == '' ]; then
-          echo "::error ::Missing input: package"
+          echo "::error::Missing input: package"
           exit 1
         elif [ "${{ inputs.organization }}" == '' ]; then
-          echo "::error ::Missing input: organization"
+          echo "::error::Missing input: organization"
           exit 1
         fi
 
