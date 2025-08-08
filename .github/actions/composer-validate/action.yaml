@@ -38,7 +38,7 @@ runs:
         composer validate
 
     - name: Composer Install
-      if: ${{ env.GIT_DIFF && env.MATCHED_FILES && inputs.monorepo-validate == 'true' }}
+      if: ${{ always() && env.GIT_DIFF && env.MATCHED_FILES && inputs.monorepo-validate == 'true' }}
       uses: ramsey/composer-install@v2
 
     - name: Monorepo-builder validate
